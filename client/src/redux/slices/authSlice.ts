@@ -25,10 +25,13 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.removeItem("userInfo");
     },
+    setOpenSidebar: (state, action: PayloadAction<boolean>) => {
+      state.isSidebarOpen = action.payload;
+    },
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, setOpenSidebar } = authSlice.actions;
 
 export default authSlice.reducer;
 

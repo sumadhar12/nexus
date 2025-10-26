@@ -5,6 +5,8 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { DatabaseConfig } from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -28,7 +30,8 @@ import { AuthModule } from './modules/auth/auth.module';
 
     // Feature modules
     AuthModule,
-    
+    UsersModule,
+    TasksModule,
   ],
 })
 export class AppModule {}

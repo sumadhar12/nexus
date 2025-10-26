@@ -13,6 +13,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const jwt_1 = require("@nestjs/jwt");
 const database_config_1 = require("./config/database.config");
 const auth_module_1 = require("./modules/auth/auth.module");
+const users_module_1 = require("./modules/users/users.module");
+const tasks_module_1 = require("./modules/tasks/tasks.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,6 +34,8 @@ exports.AppModule = AppModule = __decorate([
                 signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
             }),
             auth_module_1.AuthModule,
+            users_module_1.UsersModule,
+            tasks_module_1.TasksModule,
         ],
     })
 ], AppModule);
