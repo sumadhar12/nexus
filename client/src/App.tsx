@@ -12,6 +12,7 @@ import { IoClose } from "react-icons/io5";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Tasks from "./pages/Tasks";
+import Dashboard from "./pages/dashboard";
 
 function Layout() {
   const dispatch = useDispatch<AppDispatch>();
@@ -107,6 +108,7 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/tasks/:status" element={<Tasks />} />
           </Route>
