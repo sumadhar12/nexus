@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -17,17 +21,19 @@ export class TasksService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async createTask(body: any): Promise<{ status: boolean; task: Task; message: string }> {
+  async createTask(
+    body: any,
+  ): Promise<{ status: boolean; task: Task; message: string }> {
     try {
       const { title, team, stage, date, priority, user } = body;
-      
+
       if (!user || (!user._id && !user.id)) {
         throw new BadRequestException('User information is required');
       }
-      
+
       // Use either _id (MongoDB style) or id (MySQL style)
       const userId = user._id || user.id;
-      
+
       const task = this.taskRepository.create({
         title,
         team,
@@ -38,17 +44,17 @@ export class TasksService {
       });
 
       const savedTask = await this.taskRepository.save(task);
-      
+
       // Fetch the complete task with relations
       const completeTask = await this.taskRepository.findOne({
         where: { id: savedTask.id },
         relations: ['createdBy', 'comments', 'comments.author'],
       });
-      
+
       if (!completeTask) {
         throw new BadRequestException('Task was not created properly');
       }
-      
+
       return {
         status: true,
         task: completeTask,
@@ -81,12 +87,15 @@ export class TasksService {
     }
   }
 
-  async getTasksByUser(email: string, stage?: string): Promise<{ status: boolean; tasks: Task[] }> {
+  async getTasksByUser(
+    email: string,
+    stage?: string,
+  ): Promise<{ status: boolean; tasks: Task[] }> {
     try {
       let query = this.taskRepository
         .createQueryBuilder('task')
         .leftJoinAndSelect('task.createdBy', 'createdBy')
-        .where('JSON_SEARCH(task.team, \'one\', :email) IS NOT NULL', { email })
+        .where("JSON_SEARCH(task.team, 'one', :email) IS NOT NULL", { email })
         .orderBy('task.id', 'DESC');
 
       if (stage) {
@@ -100,6 +109,55 @@ export class TasksService {
         tasks,
       };
     } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async updateTask(
+    id: number,
+    updateData: any,
+  ): Promise<{ status: boolean; task: Task; message: string }> {
+    try {
+      const task = await this.taskRepository.findOne({ where: { id } });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      Object.assign(task, updateData);
+      const updatedTask = await this.taskRepository.save(task);
+
+      return {
+        status: true,
+        task: updatedTask,
+        message: 'Task updated successfully.',
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async deleteTask(id: number): Promise<{ status: boolean; message: string }> {
+    try {
+      const task = await this.taskRepository.findOne({ where: { id } });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      await this.taskRepository.remove(task);
+
+      return {
+        status: true,
+        message: 'Task deleted successfully.',
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new BadRequestException(error.message);
     }
   }

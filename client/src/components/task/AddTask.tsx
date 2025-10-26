@@ -28,7 +28,7 @@ interface FormData {
   date: string;
 }
 
-const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task }) => {
+const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
   const { user } = useSelector(
     (state: RootState) => state.auth as { user: User | null }
   );
@@ -48,30 +48,61 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task }) => {
     task?.priority?.toUpperCase() || PRIORIRY[2]
   );
   const submitHandler = async (data: FormData) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/create`,
-        {
-          title: data.title,
-          date: data.date,
-          priority: priority,
-          stage: stage,
-          team: team,
-          user: user,
-        },
-        {
-          withCredentials: true,
+    if (type === "edit") {
+      try {
+        const response = await axios.put(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/update/${
+            task?.id
+          }`,
+          {
+            title: data.title,
+            date: data.date,
+            priority: priority.toLowerCase(),
+            stage: stage.toLowerCase(),
+            team: team,
+            user: user,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.data) {
+          // navigate("/tasks");
+          toast.success("task edited succesfully !");
+          window.location.reload();
+        } else {
+          console.log("error");
         }
-      );
-      if (response.data) {
-        toast.success("task created succesfully !!");
-        navigate("/tasks");
-      } else {
-        console.log("error");
+      } catch (error) {
+        toast.error("something went wrong !");
+        console.log(error);
       }
-    } catch (error) {
-      toast.error("something went wrong !");
-      console.log(error);
+    } else {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/create`,
+          {
+            title: data.title,
+            date: data.date,
+            priority: priority,
+            stage: stage,
+            team: team,
+            user: user,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.data) {
+          toast.success("task created succesfully !!");
+          navigate("/tasks");
+        } else {
+          console.log("error");
+        }
+      } catch (error) {
+        toast.error("something went wrong !");
+        console.log(error);
+      }
     }
     setOpen(false);
   };
@@ -84,7 +115,7 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task }) => {
             as="h2"
             className="text-base font-bold leading-6 text-white mb-4"
           >
-            {"ADD TASK"}
+            {task ? "UPDATE TASK" : "ADD TASK"}
           </Dialog.Title>
           <div className="mt-2 flex flex-col gap-6">
             <Textbox

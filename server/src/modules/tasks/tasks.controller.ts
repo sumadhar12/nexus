@@ -7,6 +7,8 @@ import {
   Query,
   Res,
   HttpStatus,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { TasksService } from './tasks.service';
@@ -51,6 +53,51 @@ export class TasksController {
       const result = await this.tasksService.getTasksByUser(email, stage);
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  }
+
+  @Put('update/:id')
+  async updateTask(
+    @Param('id') id: string,
+    @Body() updateData: any,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.tasksService.updateTask(
+        parseInt(id),
+        updateData,
+      );
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      if (error.status === HttpStatus.NOT_FOUND) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: false,
+          message: error.message,
+        });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  }
+
+  @Delete(':id')
+  async deleteTask(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const result = await this.tasksService.deleteTask(parseInt(id));
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      if (error.status === HttpStatus.NOT_FOUND) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: false,
+          message: error.message,
+        });
+      }
       return res.status(HttpStatus.BAD_REQUEST).json({
         status: false,
         message: error.message,

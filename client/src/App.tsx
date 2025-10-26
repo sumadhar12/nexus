@@ -107,8 +107,8 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index path="/" element={<Navigate to="/dashboard" />} />
-
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/tasks/:status" element={<Tasks />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

@@ -12,6 +12,7 @@ import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
 import { TaskCardProps, User } from "../types";
 import { RootState } from "../redux/store";
+import TaskDialog from "./task/TaskDialog";
 
 const ICONS: Record<string, React.ReactNode> = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -77,6 +78,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
               <span className="uppercase font-semibold">
                 {task?.priority} Priority
               </span>
+            </div>
+
+            <div data-no-navigate>
+              <TaskDialog task={task} />
             </div>
           </div>
 
