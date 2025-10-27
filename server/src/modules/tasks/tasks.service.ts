@@ -70,6 +70,7 @@ export class TasksService {
       let query = this.taskRepository
         .createQueryBuilder('task')
         .leftJoinAndSelect('task.createdBy', 'createdBy')
+        .leftJoinAndSelect('task.comments', 'comments')
         .orderBy('task.id', 'DESC');
 
       if (stage) {
@@ -95,6 +96,8 @@ export class TasksService {
       let query = this.taskRepository
         .createQueryBuilder('task')
         .leftJoinAndSelect('task.createdBy', 'createdBy')
+        .leftJoinAndSelect('task.comments', 'comments')
+        .leftJoinAndSelect('comments.author', 'author')
         .where("JSON_SEARCH(task.team, 'one', :email) IS NOT NULL", { email })
         .orderBy('task.id', 'DESC');
 
@@ -176,6 +179,52 @@ export class TasksService {
       return {
         status: true,
         task,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async addComment(
+    id: number,
+    text: string,
+    userId: number,
+  ): Promise<{ status: boolean; message: string; task: Task }> {
+    try {
+      const task = await this.taskRepository.findOne({
+        where: { id },
+        relations: ['comments', 'comments.author'],
+      });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      const comment = this.commentRepository.create({
+        text,
+        taskId: id,
+        authorId: userId,
+      });
+
+      await this.commentRepository.save(comment);
+
+      // Reload task with updated comments
+      const updatedTask = await this.taskRepository.findOne({
+        where: { id },
+        relations: ['createdBy', 'comments', 'comments.author'],
+      });
+
+      if (!updatedTask) {
+        throw new NotFoundException('Task not found');
+      }
+
+      return {
+        status: true,
+        message: 'Comment added successfully.',
+        task: updatedTask,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {

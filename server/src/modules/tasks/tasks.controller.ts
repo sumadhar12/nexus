@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Put,
   Delete,
+  Request,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { TasksService } from './tasks.service';
@@ -109,6 +110,30 @@ export class TasksController {
   async getTask(@Param('id') id: string, @Res() res: Response) {
     try {
       const result = await this.tasksService.getTask(parseInt(id));
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      if (error.status === HttpStatus.NOT_FOUND) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: false,
+          message: error.message,
+        });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  }
+
+  @Post('comment/:id')
+  async addComment(
+    @Param('id') id: string,
+    @Body() body: { text: string, user: any },
+    @Request() req,
+    @Res() res: Response,
+  ) {
+    try {
+      const result = await this.tasksService.addComment(parseInt(id), body.text, body.user.id);
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {

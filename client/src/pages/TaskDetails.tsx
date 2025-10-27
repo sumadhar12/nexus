@@ -17,6 +17,8 @@ import Button from "../components/Button";
 import axios from "axios";
 import { toast } from "sonner";
 import { Task } from "../types";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -235,7 +237,7 @@ const TaskDetails: React.FC = () => {
               </div>
             </div>
           ) : (
-            <CommentsSection />
+            <CommentsSection task={task} id={id!} setTask={setTask} />
           )}
         </Tabs>
       </div>
@@ -243,33 +245,46 @@ const TaskDetails: React.FC = () => {
   );
 };
 
-function CommentsSection() {
+interface CommentsSectionProps {
+  task: Task;
+  id: string;
+  setTask: (task: Task) => void;
+}
+
+const CommentsSection: React.FC<CommentsSectionProps> = ({
+  task,
+  id,
+  setTask,
+}) => {
+  const { user } = useSelector((state: RootState) => state.auth);
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
-  const comments = [
-    {
-      id: 1,
-      author: { name: "Alice" },
-      text: "This feature works really well! Great job team.",
-      createdAt: moment().subtract(2, "hours").toISOString(),
-    },
-    {
-      id: 2,
-      author: { name: "Bob" },
-      text: "I think we should optimize the loading state a bit.",
-      createdAt: moment().subtract(1, "day").toISOString(),
-    },
-    {
-      id: 3,
-      author: { name: "Charlie" },
-      text: "Agree with Bob — maybe lazy load comments later.",
-      createdAt: moment().subtract(3, "days").toISOString(),
-    },
-  ];
 
   const handleSubmit = async () => {
-    console.log(text);
+    if (!text.trim()) {
+      toast.error("Please enter a comment");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/comment/${id}`,
+        { text: text, user: user },
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.data) {
+        toast.success("Comment added successfully!");
+        setTask(response.data.task);
+        setText("");
+      }
+    } catch (error) {
+      toast.error("Failed to add comment");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   interface CommentCardProps {
@@ -322,12 +337,12 @@ function CommentsSection() {
         </h4>
 
         <div className="space-y-6">
-          {comments.length > 0 ? (
-            comments.map((comment, index) => (
+          {task?.comments && task.comments.length > 0 ? (
+            task.comments.map((comment, index) => (
               <CommentCard
-                key={comment.id}
+                key={index}
                 comment={comment}
-                isLast={index === comments.length - 1}
+                isLast={index === task.comments!.length - 1}
               />
             ))
           ) : (
@@ -367,17 +382,16 @@ function CommentsSection() {
             {/* Submit Button */}
             <Button
               type="button"
+              label={isLoading ? "Posting..." : "Post Comment"}
               onClick={handleSubmit}
               disabled={isLoading || !text.trim()}
               className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg py-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "Posting..." : "Post Comment"}
-            </Button>
+            />
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default TaskDetails;
