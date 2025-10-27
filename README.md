@@ -1,9 +1,9 @@
-# Nexus Sumadhar - Task Management System
+# Nexus
 
-A modern, full-stack task management application built with React, TypeScript, NestJS, and MySQL. Manage your team's tasks efficiently with real-time collaboration features, comments, and intuitive board views.
+A modern, full-stack task management application built with React, TypeScript, NestJS, and MySQL.
 
 ## 🚀 Live Demo
- [https://nexus12.vercel.app](https://nexus12.vercel.app)
+ [https://nexusfe.vercel.app](https://nexusfe.vercel.app)
 
 ## ✨ Features
 
