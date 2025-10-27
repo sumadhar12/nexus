@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { FaTasks, FaCalendar, FaUsers } from "react-icons/fa";
 import {
@@ -12,6 +13,7 @@ import { useParams } from "react-router-dom";
 import Tabs from "../components/Tabs";
 import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import Loading from "../components/Loader";
+import Button from "../components/Button";
 import axios from "axios";
 import { toast } from "sonner";
 import { Task } from "../types";
@@ -242,10 +244,139 @@ const TaskDetails: React.FC = () => {
 };
 
 function CommentsSection() {
+  const [text, setText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const comments = [
+    {
+      id: 1,
+      author: { name: "Alice" },
+      text: "This feature works really well! Great job team.",
+      createdAt: moment().subtract(2, "hours").toISOString(),
+    },
+    {
+      id: 2,
+      author: { name: "Bob" },
+      text: "I think we should optimize the loading state a bit.",
+      createdAt: moment().subtract(1, "day").toISOString(),
+    },
+    {
+      id: 3,
+      author: { name: "Charlie" },
+      text: "Agree with Bob — maybe lazy load comments later.",
+      createdAt: moment().subtract(3, "days").toISOString(),
+    },
+  ];
+
+  const handleSubmit = async () => {
+    console.log(text);
+  };
+
+  interface CommentCardProps {
+    comment: any;
+    isLast: boolean;
+  }
+
+  const CommentCard: React.FC<CommentCardProps> = ({ comment, isLast }) => {
+    return (
+      <div className="flex space-x-4">
+        <div className="flex flex-col items-center flex-shrink-0">
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-900/30">
+            <span className="text-blue-400 font-semibold">
+              {comment?.author?.name
+                ? comment.author.name[0].toUpperCase()
+                : "U"}
+            </span>
+          </div>
+          {!isLast && (
+            <div className="w-full flex items-center">
+              <div className="w-0.5 bg-gray-600 h-16"></div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-y-2 mb-8">
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-white">
+              {comment?.author?.name || "Unknown User"}
+            </p>
+            <span className="text-xs text-gray-400">
+              {moment(comment?.createdAt).fromNow()}
+            </span>
+          </div>
+          <div className="space-y-1">
+            <p className="text-gray-300">{comment?.text}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <>
-      <p className="text-white text-center">comments</p>
-    </>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6">
+      {/* Comments Thread */}
+      <div className="lg:col-span-2">
+        <h4 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+          <MdOutlineMessage className="text-primary-600" />
+          Discussion Thread
+        </h4>
+
+        <div className="space-y-6">
+          {comments.length > 0 ? (
+            comments.map((comment, index) => (
+              <CommentCard
+                key={comment.id}
+                comment={comment}
+                isLast={index === comments.length - 1}
+              />
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <MdOutlineMessage className="mx-auto text-4xl text-gray-500 mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">
+                No comments yet
+              </h3>
+              <p className="text-gray-400">
+                Start the discussion by adding your first comment
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Add Comment Form */}
+      <div className="lg:col-span-1">
+        <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+          <h4 className="text-lg font-semibold text-white mb-4">Add Comment</h4>
+
+          <div className="space-y-4">
+            {/* Comment Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300">
+                Your Comment
+              </label>
+              <textarea
+                rows={6}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Share your thoughts, ask questions, or provide updates..."
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-100 placeholder-gray-400 resize-none transition-all duration-200"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isLoading || !text.trim()}
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg py-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Posting..." : "Post Comment"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
