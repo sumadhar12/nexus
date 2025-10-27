@@ -11,6 +11,7 @@ import moment from "moment";
 import clsx from "clsx";
 import { BGS, PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import UserInfo from "../components/UserInfo";
+import Loading from "../components/Loader";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -163,9 +164,11 @@ const Dashboard: React.FC = () => {
     (state: RootState) => state.auth as { user: User | null }
   );
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchTasks = async () => {
     try {
+      setLoading(true);
       let response;
       if (user?.isAdmin) {
         response = await axios.get(
@@ -182,6 +185,8 @@ const Dashboard: React.FC = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -254,6 +259,14 @@ const Dashboard: React.FC = () => {
       textColor: "text-rose-400",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="py-20">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full py-6 space-y-8">
