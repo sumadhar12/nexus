@@ -86,8 +86,9 @@ const Sidebar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
 
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<
+    Record<string, boolean>
+  >({});
 
   const closeSidebar = () => {
     dispatch(setOpenSidebar(false));
@@ -191,8 +192,7 @@ const Sidebar: React.FC = () => {
   return (
     <div
       className={clsx(
-        "relative h-full flex flex-col transition-all duration-300 ease-in-out",
-        isMinimized ? "w-20" : "w-80"
+        "relative h-full flex flex-col transition-all duration-300 ease-in-out w-80"
       )}
     >
       {/* Main Sidebar Content */}
@@ -203,59 +203,23 @@ const Sidebar: React.FC = () => {
             <div className="p-3 rounded-xl bg-gradient-to-br from-primary-600 via-accent-600 to-primary-700 shadow-glow">
               <FaRocket className="text-white text-2xl" />
             </div>
-            {!isMinimized && (
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                  Nexus
-                </h1>
-              </div>
-            )}
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+                Nexus
+              </h1>
+            </div>
           </div>
         </div>
 
         {/* Navigation Sections */}
-        {!isMinimized && (
-          <div className="flex-1 flex flex-col gap-6 py-4">
-            {navigationSections.map((section) => (
-              <NavigationSection key={section.title} section={section} />
-            ))}
-          </div>
-        )}
-
-        {/* Minimized Navigation Icons */}
-        {isMinimized && (
-          <div className="flex-1 flex flex-col items-center gap-4 py-4">
-            {navigationSections
-              .flatMap((section) => section.items)
-              .slice(0, 6)
-              .map((item) => {
-                const isActive = location.pathname === `/${item.link}`;
-                return (
-                  <Link
-                    key={item.label}
-                    to={item.link}
-                    onClick={closeSidebar}
-                    className={clsx(
-                      "group relative p-3 rounded-xl transition-all duration-200",
-                      isActive
-                        ? "bg-primary-900/40 text-primary-400"
-                        : "text-gray-400 hover:bg-gray-700 hover:text-primary-400"
-                    )}
-                    title={item.label}
-                  >
-                    {item.icon}
-                    {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary-500 rounded-r-full" />
-                    )}
-                  </Link>
-                );
-              })}
-          </div>
-        )}
+        <div className="flex-1 flex flex-col gap-6 py-4">
+          {navigationSections.map((section) => (
+            <NavigationSection key={section.title} section={section} />
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default Sidebar;
-
