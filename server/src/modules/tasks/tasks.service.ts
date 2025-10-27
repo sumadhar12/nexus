@@ -161,4 +161,27 @@ export class TasksService {
       throw new BadRequestException(error.message);
     }
   }
+
+  async getTask(id: number): Promise<{ status: boolean; task: Task }> {
+    try {
+      const task = await this.taskRepository.findOne({
+        where: { id },
+        relations: ['createdBy', 'comments', 'comments.author'],
+      });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      return {
+        status: true,
+        task,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(error.message);
+    }
+  }
 }

@@ -104,4 +104,24 @@ export class TasksController {
       });
     }
   }
+
+  @Get(':id')
+  async getTask(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const result = await this.tasksService.getTask(parseInt(id));
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      if (error.status === HttpStatus.NOT_FOUND) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          status: false,
+          message: error.message,
+        });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  }
+  
 }

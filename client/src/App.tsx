@@ -13,6 +13,7 @@ import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Tasks from "./pages/Tasks";
 import Dashboard from "./pages/dashboard";
+import TaskDetails from "./pages/TaskDetails";
 
 function Layout() {
   const dispatch = useDispatch<AppDispatch>();
@@ -111,6 +112,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/tasks/:status" element={<Tasks />} />
+            <Route path="/task/:id" element={<TaskDetails />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
