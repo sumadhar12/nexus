@@ -1,9 +1,19 @@
-import { IsString, IsOptional, IsEnum, IsDateString, IsArray, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsDateString,
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsObject,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateTaskDto {
   @ApiProperty({ example: 'Implement user authentication' })
   @IsString()
+  @IsNotEmpty()
   title: string;
 
   @ApiPropertyOptional({ example: 'Implement JWT-based authentication system' })
@@ -11,12 +21,18 @@ export class CreateTaskDto {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ enum: ['todo', 'in progress', 'completed'], default: 'todo' })
+  @ApiPropertyOptional({
+    enum: ['todo', 'in_progress', 'completed'],
+    default: 'todo',
+  })
   @IsOptional()
-  @IsEnum(['todo', 'in progress', 'completed'])
-  status?: string;
+  @IsEnum(['todo', 'in_progress', 'completed'])
+  stage?: string;
 
-  @ApiPropertyOptional({ enum: ['high', 'medium', 'normal', 'low'], default: 'normal' })
+  @ApiPropertyOptional({
+    enum: ['high', 'medium', 'normal', 'low'],
+    default: 'normal',
+  })
   @IsOptional()
   @IsEnum(['high', 'medium', 'normal', 'low'])
   priority?: string;
@@ -24,29 +40,23 @@ export class CreateTaskDto {
   @ApiPropertyOptional({ example: '2024-12-31' })
   @IsOptional()
   @IsDateString()
-  dueDate?: string;
+  date?: string;
 
-  @ApiPropertyOptional({ example: 1 })
+  @ApiPropertyOptional({ example: ['frontend', 'backend'] })
   @IsOptional()
-  @IsInt()
-  projectId?: number;
+  team?: any;
 
-  @ApiPropertyOptional({ example: 2 })
-  @IsOptional()
-  @IsInt()
-  assignedToId?: number;
-
-  @ApiPropertyOptional({ example: [1, 2, 3] })
-  @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  assigneeIds?: number[];
+  @ApiProperty({ example: { id: 1 } })
+  @IsObject()
+  @IsNotEmpty()
+  user: any;
 }
 
 export class UpdateTaskDto {
   @ApiPropertyOptional({ example: 'Updated task title' })
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   title?: string;
 
   @ApiPropertyOptional({ example: 'Updated task description' })
@@ -54,10 +64,10 @@ export class UpdateTaskDto {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ enum: ['todo', 'in progress', 'completed'] })
+  @ApiPropertyOptional({ enum: ['todo', 'in_progress', 'completed'] })
   @IsOptional()
-  @IsEnum(['todo', 'in progress', 'completed'])
-  status?: string;
+  @IsEnum(['todo', 'in_progress', 'completed'])
+  stage?: string;
 
   @ApiPropertyOptional({ enum: ['high', 'medium', 'normal', 'low'] })
   @IsOptional()
@@ -67,28 +77,9 @@ export class UpdateTaskDto {
   @ApiPropertyOptional({ example: '2024-12-31' })
   @IsOptional()
   @IsDateString()
-  dueDate?: string;
+  date?: string;
 
-  @ApiPropertyOptional({ example: 1 })
+  @ApiPropertyOptional({ example: ['frontend', 'backend'] })
   @IsOptional()
-  @IsInt()
-  projectId?: number;
-
-  @ApiPropertyOptional({ example: 2 })
-  @IsOptional()
-  @IsInt()
-  assignedToId?: number;
-
-  @ApiPropertyOptional({ example: [1, 2, 3] })
-  @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  assigneeIds?: number[];
-}
-
-export class AssignTaskDto {
-  @ApiProperty({ example: [1, 2, 3] })
-  @IsArray()
-  @IsInt({ each: true })
-  assigneeIds: number[];
+  team?: any;
 }

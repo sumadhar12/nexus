@@ -13,13 +13,14 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { TasksService } from './tasks.service';
+import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
 
 @Controller('task')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post('create')
-  async createTask(@Body() body: any, @Res() res: Response) {
+  async createTask(@Body() body: CreateTaskDto, @Res() res: Response) {
     try {
       const result = await this.tasksService.createTask(body);
       return res.status(HttpStatus.OK).json(result);
@@ -64,7 +65,7 @@ export class TasksController {
   @Put('update/:id')
   async updateTask(
     @Param('id') id: string,
-    @Body() updateData: any,
+    @Body() updateData: UpdateTaskDto,
     @Res() res: Response,
   ) {
     try {
@@ -128,12 +129,16 @@ export class TasksController {
   @Post('comment/:id')
   async addComment(
     @Param('id') id: string,
-    @Body() body: { text: string, user: any },
+    @Body() body: { text: string; user: any },
     @Request() req,
     @Res() res: Response,
   ) {
     try {
-      const result = await this.tasksService.addComment(parseInt(id), body.text, body.user.id);
+      const result = await this.tasksService.addComment(
+        parseInt(id),
+        body.text,
+        body.user.id,
+      );
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {
       if (error.status === HttpStatus.NOT_FOUND) {
@@ -148,5 +153,4 @@ export class TasksController {
       });
     }
   }
-  
 }
