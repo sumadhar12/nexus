@@ -10,19 +10,28 @@ import {
   Put,
   Delete,
   Request,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('task')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post('create')
-  async createTask(@Body() body: CreateTaskDto, @Res() res: Response) {
+  @UseGuards(JwtAuthGuard)
+  async createTask(
+    @Body() body: CreateTaskDto,
+    @Req() req,
+    @Res() res: Response,
+  ) {
     try {
-      const result = await this.tasksService.createTask(body);
+      const userId = req.user.userId;
+      const result = await this.tasksService.createTask(body, userId);
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {
       return res.status(HttpStatus.BAD_REQUEST).json({

@@ -6,7 +6,6 @@ import {
   IsArray,
   IsInt,
   IsNotEmpty,
-  IsObject,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -45,11 +44,6 @@ export class CreateTaskDto {
   @ApiPropertyOptional({ example: ['frontend', 'backend'] })
   @IsOptional()
   team?: any;
-
-  @ApiProperty({ example: { id: 1 } })
-  @IsObject()
-  @IsNotEmpty()
-  user: any;
 }
 
 export class UpdateTaskDto {

@@ -24,7 +24,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     // JWT configuration
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET || 'fallback-secret',
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
     }),
 

@@ -23,16 +23,10 @@ export class TasksService {
 
   async createTask(
     body: any,
+    userId: number,
   ): Promise<{ status: boolean; task: Task; message: string }> {
     try {
-      const { title, team, stage, date, priority, user } = body;
-
-      if (!user || (!user._id && !user.id)) {
-        throw new BadRequestException('User information is required');
-      }
-
-      // Use either _id (MongoDB style) or id (MySQL style)
-      const userId = user._id || user.id;
+      const { title, team, stage, date, priority } = body;
 
       const task = this.taskRepository.create({
         title,

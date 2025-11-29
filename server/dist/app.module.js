@@ -30,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
             }),
             jwt_1.JwtModule.register({
                 global: true,
-                secret: process.env.JWT_SECRET,
+                secret: process.env.JWT_SECRET || 'fallback-secret',
                 signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
             }),
             auth_module_1.AuthModule,

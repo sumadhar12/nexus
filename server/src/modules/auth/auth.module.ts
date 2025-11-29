@@ -9,16 +9,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from '../../entities/user.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'fallback-secret',
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([User]), PassportModule],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  exports: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

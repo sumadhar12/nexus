@@ -51,8 +51,7 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
     if (type === "edit") {
       try {
         const response = await axios.put(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/update/${
-            task?.id
+          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/update/${task?.id
           }`,
           {
             title: data.title,
@@ -60,7 +59,6 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
             priority: priority.toLowerCase(),
             stage: stage.toLowerCase(),
             team: team,
-            user: user,
           },
           {
             withCredentials: true,
@@ -87,7 +85,6 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
             priority: priority,
             stage: stage,
             team: team,
-            user: user,
           },
           {
             withCredentials: true,
