@@ -7,10 +7,8 @@ import UserList from "./UserList";
 import SelectList from "../SelectList";
 import Button from "../Button";
 import axios from "axios";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { RootState } from "../../redux/store";
 import { Task, User } from "../../types";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
@@ -29,9 +27,6 @@ interface FormData {
 }
 
 const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
-  const { user } = useSelector(
-    (state: RootState) => state.auth as { user: User | null }
-  );
 
   const navigate = useNavigate();
 
