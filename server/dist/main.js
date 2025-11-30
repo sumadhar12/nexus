@@ -7,6 +7,7 @@ const core_1 = require("@nestjs/core");
 const common_1 = require("@nestjs/common");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app_module_1 = require("./app.module");
+const http_exception_filter_1 = require("./common/filters/http-exception.filter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
@@ -20,6 +21,7 @@ async function bootstrap() {
         forbidNonWhitelisted: true,
         transform: true,
     }));
+    app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.setGlobalPrefix('api');
     const port = process.env.PORT || 8800;
     await app.listen(port);
