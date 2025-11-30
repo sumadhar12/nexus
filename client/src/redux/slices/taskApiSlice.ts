@@ -21,6 +21,17 @@ export const taskApiSlice = apiSlice.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: "Task", id }],
     }),
 
+    getDashboardTasks: builder.query<
+      { status: boolean; tasks: Task[] },
+      { isAdmin: boolean; email: string }
+    >({
+      query: ({ isAdmin, email }) => ({
+        url: isAdmin ? `${TASK_URL}/` : `${TASK_URL}/user/${email}`,
+        method: "GET",
+      }),
+      providesTags: ["Task"],
+    }),
+
     createTask: builder.mutation<void, Partial<Task>>({
       query: (data) => ({
         url: `${TASK_URL}/create`,
@@ -74,4 +85,5 @@ export const {
   useUpdateTaskMutation,
   useDeleteTaskMutation,
   useAddCommentMutation,
+  useGetDashboardTasksQuery,
 } = taskApiSlice;

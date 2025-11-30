@@ -105,7 +105,31 @@ const Tasks: React.FC = () => {
         {/* <Tabs tabs={TABS} setSelected={setSelected}> */}
         <div className="px-6">
           {/* {selected !== 1 ? ( */}
-          <BoardView tasks={tasks} />
+          {tasks.length > 0 ? (
+            <BoardView tasks={tasks} />
+          ) : (
+            <div className="py-20 text-center">
+              <div className="p-4 rounded-full bg-gray-700/50 mb-4 inline-block">
+                <FaList className="text-4xl text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                No tasks found
+              </h3>
+              <p className="text-gray-400 mb-6">
+                {status
+                  ? `No ${status} tasks found.`
+                  : "No tasks found. Create a new task to get started."}
+              </p>
+              {!status && (
+                <Button
+                  label="Create New Task"
+                  icon={<FaPlus className="text-lg" />}
+                  className="bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg py-2 px-6 transition-all duration-200"
+                  onClick={() => setOpen(true)}
+                />
+              )}
+            </div>
+          )}
           {/* ) : (
               <div className="w-full">
                 <Table tasks={tasks} />

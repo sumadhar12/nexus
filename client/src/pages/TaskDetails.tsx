@@ -33,6 +33,7 @@ const bgColor: Record<string, string> = {
   high: "bg-red-900/30",
   medium: "bg-amber-900/30",
   low: "bg-blue-900/30",
+  normal: "bg-blue-900/20"
 };
 
 const TABS = [

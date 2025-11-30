@@ -37,7 +37,8 @@ export function getInitials(fullName: string): string {
 export const PRIOTITYSTYELS: Record<string, string> = {
   high: "text-red-600",
   medium: "text-yellow-600",
-  low: "text-blue-600",
+  low: "text-green-600",
+  normal: "text-blue-400",
 };
 
 export const TASK_TYPE: Record<string, string> = {
@@ -52,5 +53,3 @@ export const BGS = [
   "bg-red-600",
   "bg-green-600",
 ];
-
-

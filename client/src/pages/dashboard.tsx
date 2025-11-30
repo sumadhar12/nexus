@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   MdAdminPanelSettings,
   MdKeyboardArrowDown,
@@ -12,11 +12,12 @@ import clsx from "clsx";
 import { BGS, PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import UserInfo from "../components/UserInfo";
 import Loading from "../components/Loader";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Task, User } from "../types";
 import { RootState } from "../redux/store";
+import { useGetDashboardTasksQuery } from "../redux/slices/taskApiSlice";
+import { FaTasks } from "react-icons/fa";
 
 interface TaskTableProps {
   tasks: Task[];
@@ -149,9 +150,17 @@ const TaskTable: React.FC<TaskTableProps> = ({ tasks, currentUser }) => {
         <table className="w-full">
           <TableHeader />
           <tbody>
-            {filteredTasks?.map((task, id) => (
-              <TableRow key={id} task={task} currentUser={currentUser} />
-            ))}
+            {filteredTasks?.length > 0 ? (
+              filteredTasks.map((task, id) => (
+                <TableRow key={id} task={task} currentUser={currentUser} />
+              ))
+            ) : (
+              <tr className="border-b border-gray-800 text-gray-400">
+                <td colSpan={5} className="py-8 text-center">
+                  <p className="text-base">No tasks assigned for the next 7 days.</p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -163,36 +172,26 @@ const Dashboard: React.FC = () => {
   const { user } = useSelector(
     (state: RootState) => state.auth as { user: User | null }
   );
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const fetchTasks = async () => {
-    try {
-      setLoading(true);
-      let response;
-      if (user?.isAdmin) {
-        response = await axios.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/`
-        );
-      } else {
-        response = await axios.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/user/${user?.email}`
-        );
-      }
-
-      if (response.data) {
-        setTasks(response.data.tasks);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetDashboardTasksQuery(
+    {
+      isAdmin: user?.isAdmin || false,
+      email: user?.email || "",
+    },
+    {
+      skip: !user,
+      refetchOnMountOrArgChange: true,
     }
-  };
+  );
 
-  useEffect(() => {
-    fetchTasks();
-  }, [user?.email]);
+  const tasks = data?.tasks || [];
 
   interface StatCardProps {
     label: string;
@@ -260,10 +259,52 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="py-20">
         <Loading />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="p-4 rounded-full bg-red-900/20 mb-4">
+          <MdAdminPanelSettings className="text-4xl text-red-500" />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">
+          Something went wrong
+        </h3>
+        <p className="text-gray-400 mb-6 max-w-md">
+          {(error as any)?.data?.message || "Failed to load dashboard data. Please try again."}
+        </p>
+        <button
+          onClick={() => refetch()}
+          className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!isLoading && tasks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="p-4 rounded-full bg-gray-700/50 mb-4">
+          <FaTasks className="text-4xl text-gray-400" />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">No tasks found</h3>
+        <p className="text-gray-400 mb-6">
+          You don't have any tasks assigned yet.
+        </p>
+        <button
+          onClick={() => navigate("/tasks")}
+          className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
+        >
+          Create your first task
+        </button>
       </div>
     );
   }

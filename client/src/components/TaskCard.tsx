@@ -40,7 +40,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
       case "medium":
         return "text-amber-400 bg-amber-900/20";
       case "low":
-        return "text-green-400  bg-green-900/20";
+        return "text-green-400 bg-green-900/20";
+      case "normal":
+        return "text-blue-400 bg-blue-900/20";
       default:
         return "text-gray-400 bg-gray-900/20";
     }
