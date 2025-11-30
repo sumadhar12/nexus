@@ -6,10 +6,12 @@ import { useForm } from "react-hook-form";
 import UserList from "./UserList";
 import SelectList from "../SelectList";
 import Button from "../Button";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Task, User } from "../../types";
+import {
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
+} from "../../redux/slices/taskApiSlice";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
@@ -27,9 +29,6 @@ interface FormData {
 }
 
 const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
-
-  const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -42,61 +41,32 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
   const [priority, setPriority] = useState<string>(
     task?.priority?.toUpperCase() || PRIORIRY[2]
   );
+
+  const [createTask, { isLoading: isCreating }] = useCreateTaskMutation();
+  const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
+
   const submitHandler = async (data: FormData) => {
-    if (type === "edit") {
-      try {
-        const response = await axios.put(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/update/${task?.id
-          }`,
-          {
-            title: data.title,
-            date: data.date,
-            priority: priority.toLowerCase(),
-            stage: stage.toLowerCase(),
-            team: team,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-        if (response.data) {
-          // navigate("/tasks");
-          toast.success("task edited succesfully !");
-          window.location.reload();
-        } else {
-          console.log("error");
-        }
-      } catch (error) {
-        toast.error("something went wrong !");
-        console.log(error);
+    try {
+      const taskData: Partial<Task> = {
+        title: data.title,
+        date: data.date,
+        priority: priority.toLowerCase() as Task["priority"],
+        stage: stage.toLowerCase() as Task["stage"],
+        team: team,
+      };
+
+      if (type === "edit" && task?.id) {
+        await updateTask({ id: task.id, data: taskData }).unwrap();
+        toast.success("Task updated successfully!");
+      } else {
+        await createTask(taskData).unwrap();
+        toast.success("Task created successfully!");
       }
-    } else {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/create`,
-          {
-            title: data.title,
-            date: data.date,
-            priority: priority,
-            stage: stage,
-            team: team,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-        if (response.data) {
-          toast.success("task created succesfully !!");
-          navigate("/tasks");
-        } else {
-          console.log("error");
-        }
-      } catch (error) {
-        toast.error("something went wrong !");
-        console.log(error);
-      }
+      setOpen(false);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.data?.message || "Something went wrong!");
     }
-    setOpen(false);
   };
 
   return (
@@ -160,9 +130,10 @@ const AddTask: React.FC<AddTaskProps> = ({ open, setOpen, task, type }) => {
 
             <div className="py-6 sm:flex sm:flex-row-reverse gap-4">
               <Button
-                label="Submit"
+                label={isCreating || isUpdating ? "Submitting..." : "Submit"}
                 type="submit"
                 className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700  sm:w-auto"
+                disabled={isCreating || isUpdating}
               />
 
               <Button

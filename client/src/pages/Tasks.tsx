@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaList, FaPlus, FaColumns } from "react-icons/fa";
 import { MdGridView } from "react-icons/md";
 import { useParams } from "react-router-dom";
@@ -6,61 +6,17 @@ import Loading from "../components/Loader";
 import Button from "../components/Button";
 import BoardView from "../components/BoardView";
 import AddTask from "../components/task/AddTask";
-import axios from "axios";
-import { useSelector } from "react-redux";
-import { Task, User } from "../types";
-import { RootState } from "../redux/store";
+import { useGetTasksQuery } from "../redux/slices/taskApiSlice";
 
 const Tasks: React.FC = () => {
   const params = useParams<{ status?: string }>();
-  const { user } = useSelector(
-    (state: RootState) => state.auth as { user: User | null }
-  );
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
   const status = params?.status || "";
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [open, setOpen] = useState(false);
 
-  const fetchTasks = async () => {
-    try {
-      setLoading(true);
+  const { data, isLoading } = useGetTasksQuery(status !== "all" ? status : "");
+  const tasks = data?.tasks || [];
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/`
-      );
-
-      if (response.data) {
-        let filteredTasks = response.data.tasks;
-
-        if (status === "in-progress") {
-          filteredTasks = filteredTasks?.filter(
-            (task: Task) => task.stage === "in progress"
-          );
-        } else if (status === "completed") {
-          filteredTasks = filteredTasks?.filter(
-            (task: Task) => task.stage === "completed"
-          );
-        } else if (status === "todo") {
-          filteredTasks = filteredTasks?.filter(
-            (task: Task) => task.stage === "todo"
-          );
-        }
-
-        setTasks(filteredTasks);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTasks();
-  }, [open, status, user?.email]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="py-20">
         <Loading />
@@ -147,15 +103,15 @@ const Tasks: React.FC = () => {
       {/* Tasks View */}
       <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
         {/* <Tabs tabs={TABS} setSelected={setSelected}> */}
-          <div className="px-6">
-            {/* {selected !== 1 ? ( */}
-              <BoardView tasks={tasks} />
-            {/* ) : (
+        <div className="px-6">
+          {/* {selected !== 1 ? ( */}
+          <BoardView tasks={tasks} />
+          {/* ) : (
               <div className="w-full">
                 <Table tasks={tasks} />
               </div>
             )} */}
-          </div>
+        </div>
         {/* </Tabs> */}
       </div>
 

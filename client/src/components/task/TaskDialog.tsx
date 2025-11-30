@@ -7,9 +7,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Menu, Transition } from "@headlessui/react";
 import AddTask from "./AddTask";
 import ConfirmatioDialog from "../Dialogs";
-import axios from "axios";
 import { toast } from "sonner";
 import { Task } from "../../types";
+import { useDeleteTaskMutation } from "../../redux/slices/taskApiSlice";
 
 interface TaskDialogProps {
   task: Task;
@@ -20,21 +20,16 @@ const TaskDialog: React.FC<TaskDialogProps> = ({ task }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
 
+  const [deleteTask] = useDeleteTaskMutation();
+
   const deleteHandler = async () => {
     try {
-      const response = await axios.delete(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/${task.id}`,
-        {
-          withCredentials: true,
-        }
-      );
-      if (response.data) {
-        toast.success("task deleted succesfully !!");
-        window.location.reload();
-        setOpenDialog(false);
-      }
+      await deleteTask(task.id).unwrap();
+      toast.success("Task deleted successfully!");
+      setOpenDialog(false);
     } catch (error) {
-      toast.error("Something went wrong !!");
+      console.error(error);
+      toast.error("Something went wrong!");
     }
   };
 
@@ -75,9 +70,8 @@ const TaskDialog: React.FC<TaskDialogProps> = ({ task }) => {
                     {({ active }) => (
                       <button
                         onClick={el?.onClick}
-                        className={`${
-                          active ? "bg-blue-500 text-black" : "text-black"
-                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                        className={`${active ? "bg-blue-500 text-black" : "text-black"
+                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                       >
                         {el.icon}
                         {el.label}
@@ -94,9 +88,8 @@ const TaskDialog: React.FC<TaskDialogProps> = ({ task }) => {
                       onClick={() => {
                         setOpenDialog(true);
                       }}
-                      className={`${
-                        active ? "bg-blue-500 text-white" : "text-red-900"
-                      } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      className={`${active ? "bg-blue-500 text-white" : "text-red-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                     >
                       <RiDeleteBin6Line
                         className="mr-2 h-5 w-5 text-red-400"

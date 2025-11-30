@@ -14,11 +14,14 @@ import Tabs from "../components/Tabs";
 import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import Loading from "../components/Loader";
 import Button from "../components/Button";
-import axios from "axios";
 import { toast } from "sonner";
 import { Task } from "../types";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import {
+  useGetTaskQuery,
+  useAddCommentMutation,
+} from "../redux/slices/taskApiSlice";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -48,29 +51,17 @@ const TABS = [
 const TaskDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [selected, setSelected] = useState(0);
-  const [task, setTask] = useState<Task | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  const fetchTask = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/${id}`
-      );
-      if (response) {
-        setTask(response.data.task);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to fetch task details");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, isLoading, refetch } = useGetTaskQuery(id || "");
+  const task = data?.task;
 
   useEffect(() => {
-    fetchTask();
-  }, [id]);
+    if (id) {
+      refetch();
+    }
+  }, [id, refetch]);
+
+  const loading = isLoading;
 
   if (loading) {
     return (
@@ -237,7 +228,7 @@ const TaskDetails: React.FC = () => {
               </div>
             </div>
           ) : (
-            <CommentsSection task={task} id={id!} setTask={setTask} />
+            <CommentsSection task={task} id={id!} />
           )}
         </Tabs>
       </div>
@@ -248,17 +239,15 @@ const TaskDetails: React.FC = () => {
 interface CommentsSectionProps {
   task: Task;
   id: string;
-  setTask: (task: Task) => void;
 }
 
 const CommentsSection: React.FC<CommentsSectionProps> = ({
   task,
   id,
-  setTask,
 }) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [text, setText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [addComment, { isLoading }] = useAddCommentMutation();
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -267,23 +256,12 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
     }
 
     try {
-      setIsLoading(true);
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/task/comment/${id}`,
-        { text: text, user: user },
-        {
-          withCredentials: true,
-        }
-      );
-      if (response.data) {
-        toast.success("Comment added successfully!");
-        setTask(response.data.task);
-        setText("");
-      }
+      await addComment({ id, text, user }).unwrap();
+      toast.success("Comment added successfully!");
+      setText("");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to add comment");
-    } finally {
-      setIsLoading(false);
     }
   };
 
