@@ -52,7 +52,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
     switch (stage) {
       case "todo":
         return "bg-blue-500";
-      case "in progress":
+      case "in_progress":
         return "bg-amber-500";
       case "completed":
         return "bg-green-500";

@@ -53,12 +53,9 @@ export class UpdateTaskDto {
   @IsNotEmpty()
   title?: string;
 
-  @ApiPropertyOptional({ example: 'Updated task description' })
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @ApiPropertyOptional({ enum: ['todo', 'in_progress', 'completed'] })
+  @ApiPropertyOptional({
+    enum: ['todo', 'in_progress', 'completed'],
+  })
   @IsOptional()
   @IsEnum(['todo', 'in_progress', 'completed'])
   stage?: string;

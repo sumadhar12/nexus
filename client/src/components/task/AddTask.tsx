@@ -13,7 +13,7 @@ import {
   useUpdateTaskMutation,
 } from "../../redux/slices/taskApiSlice";
 
-const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
+const LISTS = ["TODO", "IN_PROGRESS", "COMPLETED"];
 const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
 
 interface AddTaskProps {

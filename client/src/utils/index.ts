@@ -43,7 +43,7 @@ export const PRIOTITYSTYELS: Record<string, string> = {
 
 export const TASK_TYPE: Record<string, string> = {
   todo: "bg-blue-600",
-  "in progress": "bg-yellow-600",
+  in_progress: "bg-yellow-600",
   completed: "bg-green-600",
 };
 

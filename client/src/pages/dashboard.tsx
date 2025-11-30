@@ -21,7 +21,7 @@ import { FaTasks } from "react-icons/fa";
 
 interface TaskTableProps {
   tasks: Task[];
-  currentUser: User & { isAdmin?: boolean };
+  currentUser: User;
 }
 
 const TaskTable: React.FC<TaskTableProps> = ({ tasks, currentUser }) => {
@@ -68,7 +68,7 @@ const TaskTable: React.FC<TaskTableProps> = ({ tasks, currentUser }) => {
 
   interface TableRowProps {
     task: Task;
-    currentUser: User & { isAdmin?: boolean };
+    currentUser: User;
   }
 
   const TableRow: React.FC<TableRowProps> = ({ task }) => {
@@ -182,7 +182,6 @@ const Dashboard: React.FC = () => {
     refetch,
   } = useGetDashboardTasksQuery(
     {
-      isAdmin: user?.isAdmin || false,
       email: user?.email || "",
     },
     {
@@ -244,7 +243,7 @@ const Dashboard: React.FC = () => {
     {
       _id: "3",
       label: "In Progress",
-      total: tasks?.filter((task) => task.stage === "in progress")?.length || 0,
+      total: tasks?.filter((task) => task.stage === "in_progress")?.length || 0,
       icon: <FaColumns size={24} />,
       bg: "bg-gradient-to-br from-amber-500 to-amber-600",
       textColor: "text-amber-400",

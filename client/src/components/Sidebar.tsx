@@ -59,7 +59,7 @@ const navigationSections: NavSection[] = [
       },
       {
         label: "In Progress",
-        link: "tasks/in-progress",
+        link: "tasks/in_progress",
         icon: <MdOutlinePendingActions size={20} />,
         badge: null,
         description: "Active tasks",

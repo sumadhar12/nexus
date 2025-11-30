@@ -23,10 +23,10 @@ export const taskApiSlice = apiSlice.injectEndpoints({
 
     getDashboardTasks: builder.query<
       { status: boolean; tasks: Task[] },
-      { isAdmin: boolean; email: string }
+      { email: string }
     >({
-      query: ({ isAdmin, email }) => ({
-        url: isAdmin ? `${TASK_URL}/` : `${TASK_URL}/user/${email}`,
+      query: ({ email }) => ({
+        url: `${TASK_URL}/user/${email}`,
         method: "GET",
       }),
       providesTags: ["Task"],

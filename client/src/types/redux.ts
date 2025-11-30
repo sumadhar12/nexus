@@ -5,7 +5,6 @@ export interface User {
   email: string;
   role?: string;
   title?: string;
-  isAdmin?: boolean;
 }
 
 export interface AuthState {

@@ -27,7 +27,7 @@ This document outlines the improvements made to Nexus, focusing on backend robus
 ### 5. Frontend – TypeScript Types & Type Safety
 
 - **Change**: Centralized and strictly defined `Task`, `Comment`, and `User` types in `client/src/types`.
-- **Implementation**: Removed `any` types from components (`TaskDetails`, `AddTask`, `Textbox`) and Redux slices. Added missing properties (`description`, `createdAt`, `isAdmin`) to interfaces.
+- **Implementation**: Removed `any` types from components (`TaskDetails`, `AddTask`, `Textbox`) and Redux slices. Added missing properties (`description`, `createdAt`) to interfaces.
 
 ### 6. Frontend – Dashboard UX & Empty States
 

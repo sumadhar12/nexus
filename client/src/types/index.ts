@@ -6,7 +6,7 @@ export interface Task {
   title: string;
   date: string;
   priority: "high" | "medium" | "low" | "normal";
-  stage: "todo" | "in progress" | "completed";
+  stage: "todo" | "in_progress" | "completed";
   team?: User[];
   createdBy?: User;
   comments?: Comment[];
