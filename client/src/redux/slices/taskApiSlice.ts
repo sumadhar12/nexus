@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { Task } from "../../types";
+import { Task, User } from "../../types";
 
 const TASK_URL = "/task";
 
@@ -52,7 +52,7 @@ export const taskApiSlice = apiSlice.injectEndpoints({
 
     addComment: builder.mutation<
       { status: boolean; task: Task },
-      { id: string; text: string; user: any }
+      { id: string; text: string; user: User }
     >({
       query: ({ id, text, user }) => ({
         url: `${TASK_URL}/comment/${id}`,

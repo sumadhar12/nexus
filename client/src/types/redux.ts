@@ -4,7 +4,8 @@ export interface User {
   name: string;
   email: string;
   role?: string;
-  [key: string]: any;
+  title?: string;
+  isAdmin?: boolean;
 }
 
 export interface AuthState {
@@ -15,6 +16,4 @@ export interface AuthState {
 // Root state interface
 export interface RootState {
   auth: AuthState;
-  api: any;
 }
-

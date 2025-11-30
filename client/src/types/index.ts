@@ -2,7 +2,7 @@ import { User } from "./redux";
 export type { User } from "./redux";
 
 export interface Task {
-  id: string; // MySQL ID (NestJS backend)
+  id: string;
   title: string;
   date: string;
   priority: "high" | "medium" | "low" | "normal";
@@ -10,7 +10,9 @@ export interface Task {
   team?: User[];
   createdBy?: User;
   comments?: Comment[];
-  [key: string]: any;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Comment {
@@ -18,7 +20,6 @@ export interface Comment {
   text: string;
   author?: User;
   createdAt?: string;
-  [key: string]: any;
 }
 
 export interface TaskCardProps {

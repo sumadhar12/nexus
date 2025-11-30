@@ -15,7 +15,7 @@ import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import Loading from "../components/Loader";
 import Button from "../components/Button";
 import { toast } from "sonner";
-import { Task } from "../types";
+import { Task, Comment } from "../types";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import {
@@ -255,6 +255,11 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
       return;
     }
 
+    if (!user) {
+      toast.error("Please login to add a comment");
+      return;
+    }
+
     try {
       await addComment({ id, text, user }).unwrap();
       toast.success("Comment added successfully!");
@@ -266,7 +271,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
   };
 
   interface CommentCardProps {
-    comment: any;
+    comment: Comment;
     isLast: boolean;
   }
 

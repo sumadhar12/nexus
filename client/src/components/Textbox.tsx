@@ -1,12 +1,13 @@
 import React from "react";
 import clsx from "clsx";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 interface TextboxProps {
   type?: string;
   placeholder?: string;
   label?: string;
   className?: string;
-  register?: any;
+  register?: UseFormRegisterReturn;
   name?: string;
   error?: string;
   defaultValue?: string;
